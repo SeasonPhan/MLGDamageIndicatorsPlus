@@ -1,4 +1,4 @@
-package to.us.mlgfort.mlgdamageindicators;
+ackage to.us.mlgfort.mlgdamageindicators;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -28,6 +28,6 @@ public class ShieldDamageListener implements Listener
             return;
         if (event.getDamage() <= 0.05D)
             return;
-        instance.displayIndicator(event.getVictim().getLocation(), event.getDamage(), true, ChatColor.BLUE);
+        instance.displayIndicator(event.getVictim().getLocation(), event.getDamage(), true, ChatColor.LIGHT_PURPLE);
     }
 }
