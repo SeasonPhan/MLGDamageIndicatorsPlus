@@ -36,7 +36,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         instance = this;
         instance.getServer().getPluginManager().registerEvents(this, instance);
         if (instance.getServer().getPluginManager().getPlugin("AbsorptionShields") != null)
-            instance.getServer().getPluginManager().registerEvents(new ShieldDamageListener(this), instance);
+            new ShieldDamageListener(this);
         df.setRoundingMode(RoundingMode.HALF_UP);
     }
 
