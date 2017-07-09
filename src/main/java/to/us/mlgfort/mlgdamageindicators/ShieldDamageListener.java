@@ -1,4 +1,4 @@
-ackage to.us.mlgfort.mlgdamageindicators;
+package to.us.mlgfort.mlgdamageindicators;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
