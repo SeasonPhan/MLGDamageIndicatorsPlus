@@ -57,8 +57,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         return i;
     }
 
-    //I'm trying to remember why I use highest instead of Monitor. Maybe for plugins that alter behavior (e.g. respawns, minigames) in damage event?
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void onDisplayDamageIndicator(EntityDamageByEntityEvent event)
     {
         if (event.getFinalDamage() <= 0.05D)
