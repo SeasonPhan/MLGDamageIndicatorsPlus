@@ -97,6 +97,9 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
     {
         double x = r4nd0m(-0.3D, 0.3D);
         double z = r4nd0m(-0.3D, 0.3D);
+        long duration = ((long)value / 2) + 20L; //Increase display duration by a second per 40 hearts of damage.
+        if (duration > 100L) duration = 100L; //Cap to 5 seconds max (cookiez r insanely op, y'uh know)
+
         Hologram hologram = HologramsAPI.createHologram(instance, location.add(x, 2D, z));
         if (isDamage)
             hologram.appendTextLine(color + "-" + df.format(value));
@@ -106,12 +109,12 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
 
         new BukkitRunnable()
         {
-            int duration = 2;
+            int phase = 0;
 
             public void run()
             {
-                duration--;
-                if (duration <= 0)
+                phase++;
+                if (phase >= 2)
                 {
                     hologram.delete();
                     activeHolograms.remove(hologram);
@@ -120,6 +123,6 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
                 }
                 hologram.teleport(hologram.getLocation().add(0D, 1D, 0D));
             }
-        }.runTaskTimer(instance, 1L, ((long)value / 2) + 20L); //Increase display duration by a second per 40 hearts of damage.
+        }.runTaskTimer(instance, 1L, duration);
     }
 }
