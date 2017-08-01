@@ -4,7 +4,9 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -75,8 +77,10 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             return;
         if (!(event.getEntity() instanceof LivingEntity))
             return;
-        Entity entity = event.getEntity();
-        displayIndicator(entity.getLocation(), event.getAmount() / 2D, false);
+        if (event.getEntityType() == EntityType.ARMOR_STAND) //Besides not actually being alive, can lead to AoE damage causing "damage" to the damage indicators.
+            return;
+        LivingEntity livingEntity = (LivingEntity)event.getEntity();
+        displayIndicator(livingEntity.getEyeLocation(), event.getAmount() / 2D, false);
     }
 
     public static Double r4nd0m(double min, double max) {
@@ -100,7 +104,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         long duration = ((long)value / 2) + 20L; //Increase display duration by a second per 40 hearts of damage.
         if (duration > 100L) duration = 100L; //Cap to 5 seconds max (cookiez r insanely op, y'uh know)
 
-        Hologram hologram = HologramsAPI.createHologram(instance, location.add(x, 2D, z));
+        Hologram hologram = HologramsAPI.createHologram(instance, location);
         if (isDamage)
             hologram.appendTextLine(color + "-" + df.format(value));
         else
