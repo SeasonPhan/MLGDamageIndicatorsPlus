@@ -66,8 +66,8 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             return;
         if (!(event.getEntity() instanceof LivingEntity))
             return;
-        Entity entity = event.getEntity();
-        displayIndicator(entity.getLocation(), event.getFinalDamage() / 2D, true);
+        LivingEntity livingEntity = (LivingEntity)event.getEntity();
+        displayIndicator(livingEntity.getEyeLocation(), event.getFinalDamage() / 2D, true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -104,7 +104,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         long duration = ((long)value / 2) + 20L; //Increase display duration by a second per 40 hearts of damage.
         if (duration > 100L) duration = 100L; //Cap to 5 seconds max (cookiez r insanely op, y'uh know)
 
-        Hologram hologram = HologramsAPI.createHologram(instance, location);
+        Hologram hologram = HologramsAPI.createHologram(instance, location.add(x, 0D, z));
         if (isDamage)
             hologram.appendTextLine(color + "-" + df.format(value));
         else
