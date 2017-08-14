@@ -28,6 +28,6 @@ public class ShieldDamageListener implements Listener
             return;
         if (event.getDamage() <= 0.05D)
             return;
-        instance.displayIndicator(event.getVictim().getLocation().add(0, 1.5, 0), event.getDamage() / 2D, true, ChatColor.GOLD);
+        instance.displayIndicator(event.getVictim().getLocation().add(0, 2.2, 0), event.getDamage() / 2D, true, ChatColor.GOLD);
     }
 }

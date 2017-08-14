@@ -71,7 +71,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         LivingEntity livingEntity = (LivingEntity)event.getEntity();
         Location location;
         if (event.getEntityType() == EntityType.PLAYER)
-            location = livingEntity.getLocation().add(0, 1.5D, 0);
+            location = livingEntity.getLocation().add(0, 2.2D, 0);
         else
             location = livingEntity.getEyeLocation();
         displayIndicator(location, event.getFinalDamage() / 2D, true);
@@ -87,7 +87,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         LivingEntity livingEntity = (LivingEntity)event.getEntity();
         Location location;
         if (event.getEntityType() == EntityType.PLAYER)
-            location = livingEntity.getLocation().add(0, 1.5D, 0);
+            location = livingEntity.getLocation().add(0, 2.2D, 0);
         else
             location = livingEntity.getEyeLocation();
         displayIndicator(location, event.getAmount() / 2D, false);
