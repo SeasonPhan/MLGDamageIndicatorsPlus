@@ -66,8 +66,15 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             return;
         if (!(event.getEntity() instanceof LivingEntity))
             return;
+        if (event.getEntityType() == EntityType.ARMOR_STAND) //Besides not actually being alive, can lead to AoE damage causing "damage" to the damage indicators.
+            return;
         LivingEntity livingEntity = (LivingEntity)event.getEntity();
-        displayIndicator(livingEntity.getEyeLocation(), event.getFinalDamage() / 2D, true);
+        Location location;
+        if (event.getEntityType() == EntityType.PLAYER)
+            location = livingEntity.getLocation().add(0, 1.5D, 0);
+        else
+            location = livingEntity.getEyeLocation();
+        displayIndicator(location, event.getFinalDamage() / 2D, true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -77,10 +84,13 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             return;
         if (!(event.getEntity() instanceof LivingEntity))
             return;
-        if (event.getEntityType() == EntityType.ARMOR_STAND) //Besides not actually being alive, can lead to AoE damage causing "damage" to the damage indicators.
-            return;
         LivingEntity livingEntity = (LivingEntity)event.getEntity();
-        displayIndicator(livingEntity.getEyeLocation(), event.getAmount() / 2D, false);
+        Location location;
+        if (event.getEntityType() == EntityType.PLAYER)
+            location = livingEntity.getLocation().add(0, 1.5D, 0);
+        else
+            location = livingEntity.getEyeLocation();
+        displayIndicator(location, event.getAmount() / 2D, false);
     }
 
     public static Double r4nd0m(double min, double max) {
