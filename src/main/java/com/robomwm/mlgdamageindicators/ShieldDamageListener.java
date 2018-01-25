@@ -1,10 +1,10 @@
 package com.robomwm.mlgdamageindicators;
 
+import com.robomwm.absorptionshields.event.ShieldDamageEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import to.us.tf.absorptionshields.event.ShieldDamageEvent;
 
 /**
  * Created on 7/7/2017.
