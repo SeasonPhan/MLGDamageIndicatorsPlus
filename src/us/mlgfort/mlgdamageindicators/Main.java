@@ -1,9 +1,11 @@
-package com.robomwm.mlgdamageindicators;
+package us.mlgfort.mlgdamageindicators;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -13,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.mlgfort.mlgdamageindicators.CommandHandler;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -24,26 +27,52 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 7/7/2017.
  *
  * @author RoboMWM
+ *
+ * Heavily altered by PizzaParrot on 10/20/2019
  */
-public class MLGDamageIndicators extends JavaPlugin implements Listener
+public class Main extends JavaPlugin implements Listener
 {
     JavaPlugin instance;
     Set<Hologram> activeHolograms = new HashSet<>();
     DecimalFormat df = new DecimalFormat("#.#");
+    
+    int maxDuration;
+    int damagePerTick;
+    double bounceSpread;
+    double bounceHeightMax;
+    double bounceHeightMin;
+    boolean showFullHearts;
+    boolean dynamicDuration;
+    String messageDamage;
+    String messageHealing;
 
     public void onEnable()
     {
         instance = this;
         instance.getServer().getPluginManager().registerEvents(this, instance);
-        if (instance.getServer().getPluginManager().getPlugin("AbsorptionShields") != null)
-            new ShieldDamageListener(this);
         df.setRoundingMode(RoundingMode.HALF_UP);
+		getCommand("damageindicators").setExecutor(new CommandHandler(this));
+        loadConfig();
+        saveDefaultConfig();
     }
 
     public void onDisable()
     {
         getLogger().info("Cleaning up any active damage indicator holograms...");
         getLogger().info(String.valueOf(cleanupDamageIndicators()) + " holograms removed.");
+    }
+    
+    void loadConfig()
+    {
+    	showFullHearts = getConfig().getBoolean("show-full-hearts");
+    	bounceSpread = getConfig().getDouble("hologram-spread");
+    	bounceHeightMin = getConfig().getDouble("hologram-height-min");
+    	bounceHeightMax = getConfig().getDouble("hologram-height-max");
+    	maxDuration = getConfig().getInt("max-duration");
+    	dynamicDuration = getConfig().getBoolean("dynamic-duration");
+    	damagePerTick = getConfig().getInt("damage-per-tick");
+    	messageDamage = getConfig().getString("message-damage");
+    	messageHealing = getConfig().getString("message-healing");
     }
 
     public int cleanupDamageIndicators()
@@ -55,6 +84,24 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
         int i = activeHolograms.size();
         activeHolograms.clear();
         return i;
+    }
+    
+    int getMaxLength()
+    {
+    	if (maxDuration < 0)
+    		return 60;
+    	if (maxDuration > 1200)
+    		return 1200;
+    	else
+    		return maxDuration;
+    }
+    
+    int getDamageTick()
+    {
+    	if (damagePerTick <= 0)
+    		return 1;
+    	else
+    		return damagePerTick;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -72,7 +119,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             location = livingEntity.getLocation().add(0, 2.2D, 0);
         else
             location = livingEntity.getEyeLocation();
-        displayIndicator(location, event.getFinalDamage() / 2D, true);
+        displayIndicator(location, event.getFinalDamage(), true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -88,7 +135,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
             location = livingEntity.getLocation().add(0, 2.2D, 0);
         else
             location = livingEntity.getEyeLocation();
-        displayIndicator(location, event.getAmount() / 2D, false);
+        displayIndicator(location, event.getAmount(), false);
     }
 
     public static Double r4nd0m(double min, double max) {
@@ -97,26 +144,58 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
 
     public void displayIndicator(final Location location, final double value, final boolean isDamage)
     {
-        ChatColor color;
-        if (isDamage)
-            color = ChatColor.RED;
+    	double x;
+    	double y;
+    	double z;
+    	if (bounceSpread < 16 || bounceSpread > 0)
+    	{
+    		x = r4nd0m(-bounceSpread, bounceSpread);
+    		z = r4nd0m(-bounceSpread, bounceSpread);
+    	}
+    	else 
+    	{
+            x = r4nd0m(-0.8D, 0.8D);
+            z = r4nd0m(-0.8D, 0.8D);
+    	}
+    	
+    	if (bounceHeightMin > bounceHeightMax)
+    		bounceHeightMin = bounceHeightMax;
+    	if (bounceHeightMin < 0 || bounceHeightMin > 16)
+    		bounceHeightMin = 0;
+    	if (bounceHeightMax < 0 || bounceHeightMax > 16)
+    		bounceHeightMax = 1;
+    	
+        y = r4nd0m(bounceHeightMin, bounceHeightMax);
+        
+        long duration;
+        if (dynamicDuration)
+        {
+        	duration = ((long)value / getDamageTick()) + 10L;
+            if (duration > getMaxLength())
+            	duration = getMaxLength(); //Cap to config's max duration.
+        }
         else
-            color = ChatColor.GREEN;
-        displayIndicator(location, value, isDamage, color);
-    }
+        	duration = getMaxLength();
 
-    public void displayIndicator(final Location location, final double value, final boolean isDamage, ChatColor color)
-    {
-        double x = r4nd0m(-0.3D, 0.3D);
-        double z = r4nd0m(-0.3D, 0.3D);
-        long duration = ((long)value / 2) + 20L; //Increase display duration by a second per 40 hearts of damage.
-        if (duration > 100L) duration = 100L; //Cap to 5 seconds max (cookiez r insanely op, y'uh know)
-
-        Hologram hologram = HologramsAPI.createHologram(instance, location.add(x, 0D, z));
+        final Hologram hologram = HologramsAPI.createHologram(instance, location.add(x, 0D, z));
+        
+        String getDamage;
+        String getHealing;
+        if (showFullHearts)
+        {
+            getDamage = messageDamage.replace("%amount%", df.format(value / 2));
+            getHealing = messageHealing.replace("%amount%", df.format(value / 2));
+        } 
+        else 
+        {
+        	getDamage = messageDamage.replace("%amount%", df.format(value));
+            getHealing = messageHealing.replace("%amount%", df.format(value));
+        }
+        
         if (isDamage)
-            hologram.appendTextLine(color + "-" + df.format(value));
+        	hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getDamage));
         else
-            hologram.appendTextLine(color + "+" + df.format(value));
+        	hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getHealing));
         activeHolograms.add(hologram);
 
         new BukkitRunnable()
@@ -133,7 +212,7 @@ public class MLGDamageIndicators extends JavaPlugin implements Listener
                     this.cancel();
                     return;
                 }
-                hologram.teleport(hologram.getLocation().add(0D, 1D, 0D));
+                hologram.teleport(hologram.getLocation().add(0D, y, 0D));
             }
         }.runTaskTimer(instance, 1L, duration);
     }

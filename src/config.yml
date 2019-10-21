@@ -1,0 +1,30 @@
+# MLGDamageIndicators Config
+#
+# By default 1 damage = 0.5 hearts in Minecraft.
+# Enables showing damage in full hearts instead (default: false)
+show-full-hearts: false
+# Distance (in blocks) holograms will spawn.
+# Can be a value between 0 and 16.
+hologram-spread: 0.8
+# Minimum distance (in blocks) holograms will bounce upwards.
+# (Default: 0). Can be a value between 0 and 16.
+hologram-height-min: 0.0
+# Maximum distance (in blocks) holograms will bounce upwards. 
+# Can be a value between 0 and 16.
+hologram-height-max: 1.2
+# Maximum duration of the holograms (in ticks).
+# 20 ticks = 1 second.
+# Can be a value between 0 and 1200. (Up to 60 seconds).
+max-duration: 30
+# Whether hologram duration should be based on damage dealt.
+dynamic-duration: false
+# If dynamic-duration is enabled, how much damage should be dealt 
+# for each tick of additional duration. (Base duration is 10 ticks)
+# (E.g. if damage-per-tick = 10 and an enemy takes 200 damage, the
+#  final duration would be 200/10 + 10 = 30 ticks)
+# Note that this is still capped by max-duration value.
+damage-per-tick: 10
+# Message shown when an entity takes damage.
+message-damage: "&c-%amount%❤"
+# Message shown when an entity is healed.
+message-healing: "&a+%amount%❤"
