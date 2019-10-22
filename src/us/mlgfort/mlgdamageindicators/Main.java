@@ -51,7 +51,7 @@ public class Main extends JavaPlugin implements Listener
         instance = this;
         instance.getServer().getPluginManager().registerEvents(this, instance);
         df.setRoundingMode(RoundingMode.HALF_UP);
-		getCommand("damageindicators").setExecutor(new CommandHandler(this));
+	getCommand("damageindicators").setExecutor(new CommandHandler(this));
         loadConfig();
         saveDefaultConfig();
     }
@@ -188,8 +188,8 @@ public class Main extends JavaPlugin implements Listener
         } 
         else 
         {
-        	getDamage = messageDamage.replace("%amount%", df.format(value));
-            getHealing = messageHealing.replace("%amount%", df.format(value));
+	    getDamage = messageDamage.replace("%amount%", df.format(value));
+	    getHealing = messageHealing.replace("%amount%", df.format(value));
         }
         
         if (isDamage)
