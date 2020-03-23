@@ -43,6 +43,9 @@ public class Main extends JavaPlugin implements Listener
     double bounceHeightMin;
     boolean showFullHearts;
     boolean dynamicDuration;
+    boolean critState;
+    double critValue;
+    String messageCrit;
     String messageDamage;
     String messageHealing;
 
@@ -51,7 +54,7 @@ public class Main extends JavaPlugin implements Listener
         instance = this;
         instance.getServer().getPluginManager().registerEvents(this, instance);
         df.setRoundingMode(RoundingMode.HALF_UP);
-	getCommand("damageindicators").setExecutor(new CommandHandler(this));
+		getCommand("damageindicators").setExecutor(new CommandHandler(this));
         loadConfig();
         saveDefaultConfig();
     }
@@ -73,6 +76,9 @@ public class Main extends JavaPlugin implements Listener
     	damagePerTick = getConfig().getInt("damage-per-tick");
     	messageDamage = getConfig().getString("message-damage");
     	messageHealing = getConfig().getString("message-healing");
+    	critState = getConfig().getBoolean("enable-crit");
+    	critValue = getConfig().getDouble("crit-value");
+    	messageCrit = getConfig().getString("message-crit");
     }
 
     public int cleanupDamageIndicators()
@@ -181,19 +187,28 @@ public class Main extends JavaPlugin implements Listener
         
         String getDamage;
         String getHealing;
+        String getCrit;
+        
         if (showFullHearts)
         {
             getDamage = messageDamage.replace("%amount%", df.format(value / 2));
             getHealing = messageHealing.replace("%amount%", df.format(value / 2));
+            getCrit = messageCrit.replace("%amount%", df.format(value / 2));
         } 
         else 
         {
-	    getDamage = messageDamage.replace("%amount%", df.format(value));
-	    getHealing = messageHealing.replace("%amount%", df.format(value));
+        	getDamage = messageDamage.replace("%amount%", df.format(value));
+            getHealing = messageHealing.replace("%amount%", df.format(value));
+            getCrit = messageCrit.replace("%amount%", df.format(value));
         }
         
         if (isDamage)
-        	hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getDamage));
+        {
+        	if (critState && value > critValue)
+        		hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getCrit));
+        	else
+        		hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getDamage));
+        }
         else
         	hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getHealing));
         activeHolograms.add(hologram);
