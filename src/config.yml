@@ -6,7 +6,7 @@
 show-full-hearts: false
 # Distance (in blocks) holograms will spawn.
 # Can be a value between 0 and 16.
-hologram-spread: 0.8
+hologram-spread: 0.5
 # Minimum distance (in blocks) holograms will bounce upwards.
 # (Default: 0). Can be a value between 0 and 16.
 hologram-height-min: 0.0

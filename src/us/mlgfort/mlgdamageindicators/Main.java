@@ -2,6 +2,8 @@ package us.mlgfort.mlgdamageindicators;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -153,23 +155,37 @@ public class Main extends JavaPlugin implements Listener
     	double x;
     	double y;
     	double z;
-    	if (bounceSpread < 16 || bounceSpread > 0)
+    	if (bounceSpread < 16 && bounceSpread > 0)
     	{
     		x = r4nd0m(-bounceSpread, bounceSpread);
     		z = r4nd0m(-bounceSpread, bounceSpread);
     	}
+    	else if (bounceSpread == 0)
+    	{
+    		x = z = 0;
+    	}
     	else 
     	{
-            x = r4nd0m(-0.8D, 0.8D);
-            z = r4nd0m(-0.8D, 0.8D);
+            x = r4nd0m(-0.5D, 0.5D);
+            z = r4nd0m(-0.5D, 0.5D);
+            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MLGDamageIndicators] Invalid value for hologram spread. Please check your config!");
     	}
     	
     	if (bounceHeightMin > bounceHeightMax)
+    	{
     		bounceHeightMin = bounceHeightMax;
+    		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MLGDamageIndicators] Minimum bounce height exceeds maximum bounce height. Please check your config!");
+    	}
     	if (bounceHeightMin < 0 || bounceHeightMin > 16)
+    	{
     		bounceHeightMin = 0;
+    		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MLGDamageIndicators] Invalid value for minimum hologram bounce height. Please check your config!");
+    	}
     	if (bounceHeightMax < 0 || bounceHeightMax > 16)
+    	{
     		bounceHeightMax = 1;
+    		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MLGDamageIndicators] Invalid value for maximum hologram bounce height. Please check your config!");
+    	}
     	
         y = r4nd0m(bounceHeightMin, bounceHeightMax);
         
